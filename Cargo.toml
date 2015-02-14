@@ -3,3 +3,6 @@
 name = "squashfs"
 version = "0.0.1"
 authors = ["Cody P Schafer <dev@codyps.com>"]
+
+[dependencies]
+rustc-serialize = "*"
