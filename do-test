@@ -1,0 +1,21 @@
+#! /bin/sh
+set -euf
+
+D=$(dirname $0)
+
+T=
+trap 'if [ -n "$T" ]; then rm -rf "$T"; fi' EXIT INT
+T="$(mktemp -d)"
+
+mkdir -p "$T/e"
+
+mkdir -p "$D"/tmp
+
+run () {
+	if ! "$@" > "$T/log" 2>&1; then
+		echo "E: failure in: '$*'"
+		cat "$T/log"
+	fi
+}
+
+run mksquashfs "$T/e" "$D"/tmp/empty.squashfs
