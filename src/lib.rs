@@ -35,8 +35,14 @@ pub struct File<'a, R: Read + Seek + 'a> {
 }
 
 impl<'b, R: Read+Seek + 'b> File<'b, R> {
-    fn new(r: &'b mut R) -> File<'b, R> {
+    fn new(r: &'b mut R) -> File<'b, R>
+    {
         File { a : r }
+    }
+
+    fn size(&mut self) -> u64
+    {
+
     }
 }
 
