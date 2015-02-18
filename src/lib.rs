@@ -37,18 +37,37 @@ pub struct File<'a, R: Read + Seek + 'a> {
     /* FIXME: mutability is only for Seek+Reader's limitation in needing a cursor.
      * Once we have it, change to ReaderAt and use a non-mut reference
      */
-    a: &'a mut R
+    a: &'a mut R,
+    sb: Super,
+}
+
+pub trait WriteAt {
+    // TODO: remove mut from self & use native calls
+    pub fn write_at(&mut self, &[u8], u64) -> io::Result<()>;
+};
+
+pub trait ReadAt {
+    // TODO: remove mut from self & use native calls
+    pub fn read_at(&mut self, &mut [u8], u64) -> io::Result<usize>;
+}
+
+// FIXME: need negative bounds or (even better) a "best matching" approach like C++
+impl ReadAt for Read+Seek {
+    pub fn read_at(&mut self, data: &mut [u8], offs: u64) {
+    }
 }
 
 impl<'b, R: Read+Seek + 'b> File<'b, R> {
     fn new(r: &'b mut R) -> File<'b, R>
     {
-        File { a : r }
+        File {
+            a : r,
+            sb :
+        }
     }
 
     fn size(&mut self) -> u64
     {
-        a.seek(io::SeekFrom::Start(
     }
 }
 

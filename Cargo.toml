@@ -6,3 +6,5 @@ authors = ["Cody P Schafer <dev@codyps.com>"]
 
 [dependencies]
 rustc-serialize = "*"
+bincode = "*"
+bincode_ext = "*"
