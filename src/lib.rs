@@ -1,8 +1,12 @@
 #![feature(io)]
 
 extern crate "rustc-serialize" as rustc_serialize;
+extern crate bincode;
+extern crate bincode_ext;
 
+use std::mem;
 use std::io::{Read, Seek};
+use bincode_ext::byte_order::Le;
 
 /*
  * TODO: Use an enum with a custom impl of Decoder to control the endianness
@@ -11,7 +15,7 @@ use std::io::{Read, Seek};
  */
 #[repr(packed)]
 #[derive(RustcDecodable, RustcEncodable)]
-struct Super {
+pub struct Super {
     s_magic: Le<u32>,
     inodes: Le<u32>,
     mkfs_time: Le<u32>,
@@ -41,33 +45,15 @@ pub struct File<'a, R: Read + Seek + 'a> {
     sb: Super,
 }
 
-pub trait WriteAt {
-    // TODO: remove mut from self & use native calls
-    pub fn write_at(&mut self, &[u8], u64) -> io::Result<()>;
-};
-
-pub trait ReadAt {
-    // TODO: remove mut from self & use native calls
-    pub fn read_at(&mut self, &mut [u8], u64) -> io::Result<usize>;
-}
-
-// FIXME: need negative bounds or (even better) a "best matching" approach like C++
-impl ReadAt for Read+Seek {
-    pub fn read_at(&mut self, data: &mut [u8], offs: u64) {
-    }
-}
-
 impl<'b, R: Read+Seek + 'b> File<'b, R> {
-    fn new(r: &'b mut R) -> File<'b, R>
+    fn open(r: &'b mut R) -> Result<File<'b, R>, std::io::Error>
     {
-        File {
+        let sb_buf : Vec<u8> = Vec::new(mem::size_of::<Super>());
+        try!(r.read(sb_buf));
+        Ok(File {
             a : r,
-            sb :
-        }
-    }
-
-    fn size(&mut self) -> u64
-    {
+            sb : bincode::decode(&mut sb_buf)
+        })
     }
 }
 
